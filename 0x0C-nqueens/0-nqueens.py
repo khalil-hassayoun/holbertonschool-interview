@@ -1,39 +1,44 @@
 #!/usr/bin/python3
-""" program that solves the N queens problem """
+""" N queens """
 import sys
 
 
-def isSafe(Board, line, i):
-    """ checks if we can insert queen at column i in that line in Board"""
-    for x in range(line):
-        if (Board[x] == i or
-                Board[x] + line - x == i or
-                Board[x] + x - line == i):
-            return False
-    return True
-
-
-def Fill_line(Board, line):
-    """ fills each line of the board with the correct index """
-    for i in range(len(Board)):
-        if isSafe(Board, line, i):
-            Board[line] = i
-            if line < len(Board) - 1:
-                Fill_line(Board, line + 1)
-            else:
-                print([[i, Board[i]] for i in range(len(Board))])
-
-if len(sys.argv) != 2:
+if len(sys.argv) > 2 or len(sys.argv) < 2:
     print("Usage: nqueens N")
-    sys.exit(1)
-try:
-    n = int(sys.argv[1])
-except:
-    print("N must be a number")
-    sys.exit(1)
-if n < 4:
-    print("N must be at least 4")
-    sys.exit(1)
+    exit(1)
 
-Board = [-1 for i in range(n)]
-Fill_line(Board, 0)
+if not sys.argv[1].isdigit():
+    print("N must be a number")
+    exit(1)
+
+if int(sys.argv[1]) < 4:
+    print("N must be at least 4")
+    exit(1)
+
+n = int(sys.argv[1])
+
+
+def queens(n, i=0, a=[], b=[], c=[]):
+    """ find possible positions """
+    if i < n:
+        for j in range(n):
+            if j not in a and i + j not in b and i - j not in c:
+                yield from queens(n, i + 1, a + [j], b + [i + j], c + [i - j])
+    else:
+        yield a
+
+
+def solve(n):
+    """ solve """
+    k = []
+    i = 0
+    for solution in queens(n, 0):
+        for s in solution:
+            k.append([i, s])
+            i += 1
+        print(k)
+        k = []
+        i = 0
+
+
+solve(n)
